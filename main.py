@@ -65,16 +65,40 @@ def get_item(item_id: int) -> Item:
 
 @app.post("/items/")
 def create_item(item: Item):
+    """
+    Creates a new tree item in the database based on the provided `item` data.
+
+    Args:
+        item (Item): The new tree item data conforming to the `Item` Pydantic model.
+
+    Returns:
+        dict: A message indicating successful creation of the item.
+    """
+
     with db_driver.Session(db_driver.engine) as session:
-        results = session.query(db_driver.tree_table).all()
-        item_id = str(len(results))
-        new_tree = db_driver.Tree(species=item.species, meters=item.meters, feet=item.feet, category=str(item.category.value))
+        # Calculate and set item_id based on your logic (consider using UUIDs)
+        # ...
+        new_tree = db_driver.Tree(species=item.species, meters=item.meters, feet=item.feet, category=item.category)
         session.add(new_tree)
         session.commit()
+
     return {"message": "Item created successfully"}
 
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item: Item):
+    
+    """
+    Updates an existing tree item in the database based on the provided `updated_item` data.
+
+    Args:
+        item_id (int): The unique identifier of the tree item to update.
+        updated_item (TreeItem): The updated data for the tree item.
+
+    Returns:
+        dict: A message indicating successful update of the item.
+    """
+    
+    
     with db_driver.Session(db_driver.engine) as session:
         tree = session.query(db_driver.Tree).filter_by(id=item_id).first()
         if not tree:
